@@ -1,0 +1,55 @@
+{% extends '../base.html' %}
+{% block content-wrapper %}
+<div class="content-wrapper" onclick="show('showWay1','showWay2',{{ infoShow }}),show('showAno1','showAno2',{{ infoShow }})">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        加载打卡结果：
+      </h1>
+    </section>
+
+    <script type="text/javascript">
+        function show(id1,id2,infoGet){
+            if(infoGet===1){
+                var target=document.getElementById(id1);
+                target.style.display="block";
+            }
+            else{
+                var target=document.getElementById(id2);
+                target.style.display="block";
+            }
+        }
+    </script>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="error-page">
+        <h2 class="headline text-aqua" id="showWay1" style="display: none">Great!</h2>
+        <h2 class="headline text-aqua" id="showWay2" style="display: none">Bad!</h2>
+
+        <div class="error-content">
+          <h3 id="showAno1" style="display: none"><i class="fa fa-hand-paper-o text-aqua" ></i> 打卡成功</h3>
+          <h3 id="showAno2" style="display: none"><i class="fa fa-hand-paper-o text-aqua"></i> 已打卡，请不要重复打卡</h3>
+
+          <p>
+            可选择返回页面，或退出系统
+          </p>
+          <form class="search-form">
+            <div class="input-group">
+              <input type="text" name="search" class="form-control" placeholder="Search">
+
+              <div class="input-group-btn">
+                <button type="submit" name="submit" class="btn btn-warning.hover{background-color:#00c0ef} btn-flat"><i class="fa fa-search"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.input-group -->
+          </form>
+        </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
+    </section>
+    <!-- /.content -->
+  </div>
+{% endblock %}

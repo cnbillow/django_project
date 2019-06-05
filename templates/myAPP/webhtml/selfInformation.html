@@ -1,0 +1,76 @@
+{% extends '../base.html' %}
+{% block content-wrapper %}
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        个人信息
+        <small>详细</small>
+      </h1>
+    </section>
+
+    <div class="pad margin no-print">
+      <div class="callout callout-info" style="margin-bottom: 0!important;">
+        <h4><i class="fa fa-info"></i> Note:</h4>
+        核实个人信息，谨慎修改。
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="invoice">
+      <!-- title row -->
+      <div class="row">
+        <div class="col-xs-12">
+          <h2 class="page-header">
+            <i class="fa fa-user"></i> 个人信息详情
+          </h2>
+        </div>
+        <!-- /.col -->
+      </div>
+
+        <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <th style="width:50%">姓名:</th>
+                <td>{{ user.name }}</td>
+              </tr>
+              <tr>
+                <th>工号：</th>
+                <td>{{ user.id}}</td>
+              </tr>
+              <tr>
+                <th>生日：</th>
+                <td>{{ user.birthday}}</td>
+              </tr>
+              <tr>
+                <th>部门ID：</th>
+                <td>{{ user.department_id_id }}</td>
+              </tr>
+            </table>
+          </div>
+
+      <!-- this row will not appear when printing -->
+      <div class="row no-print">
+        <div class="col-xs-12">
+          <a href="#" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+          <button type="button" class="btn btn-success pull-right"><i class="fa fa-edit"></i> 修改个人信息
+          </button>
+          <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;">
+            <i class="fa fa-download"></i> 生成 PDF
+          </button>
+        </div>
+      </div>
+      <form method='post' action='sub/'>
+        <p>网址：<input type='text' name='website' value='http://jsform2.com/web/formview/5ce5f813fc918f6d8e538905' placeholder="二维码签到页面"></p>
+        <button type="submit">提交</button>
+        {% csrf_token %}
+      </form>
+        <iframe height="764" allowTransparency="true" frameborder="0" scrolling="no"style="width:100%; border:none"src="http://jsform3.com/web/formembed/5ce5f813fc918f6d8e538905"></iframe>
+    </section>
+    <!-- /.content -->
+    <div class="clearfix"></div>
+  </div>
+  <!-- /.content-wrapper -->
+
+{% endblock %}
