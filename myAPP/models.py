@@ -3,58 +3,21 @@ from django.db import models
 # Create your models here.
 
 class arrangements(models.Model):
-    id = models.IntegerField(primary_key=True)
-    start_time = models.CharField(max_length=255)
-    end_time = models.CharField(max_length=255)
-    period = models.CharField(max_length=255)
-    start_date = models.CharField(max_length=255)
+    day=models.CharField(max_length=255,default="-")
+    employee_id = models.IntegerField(default=0)
+    start_time_am = models.CharField(max_length=255,default='-')
+    end_time_am = models.CharField(max_length=255,default='-')
+    start_time_pm = models.CharField(max_length=255,default='-')
+    end_time_pm = models.CharField(max_length=255,default='-')
 
 class attendances(models.Model):
     id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=11,default="user")
     employee_id = models.IntegerField()
     arrive_at = models.CharField(max_length=255)
     leave_at = models.CharField(max_length=255)
     is_overtime = models.SmallIntegerField(max_length=4)
     reason = models.CharField(max_length=255)
-
-
-# class auth_group(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     name = models.CharField(max_length=80)
-#
-# class auth_group_premissions(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     group_id = models.IntegerField(max_length=11)
-#     permission_id = models.IntegerField(max_length=11)
-#
-# class auth_permission(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     name = models.CharField(max_length=255)
-#     content_type_id = models.ForeignKey(a,on_delete = models.PROTECT)
-#     condename = models.CharField(max_length=100)
-#
-# class auth_user(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     password = models.CharField(max_length=128)
-#     last_login = models.DateTimeField(max_length=6)
-#     is_superuser = models.SmallIntegerField(max_length=1)
-#     username = models.CharField(max_length=150)
-#     first_name = models.CharField(max_length=30)
-#     last_name = models.CharField(max_length=150)
-#     email = models.CharField(max_length=254)
-#     is_staff = models.SmallIntegerField(max_length=1)
-#     is_active = models.SmallIntegerField(max_length=1)
-#     date_joined = models.DateTimeField(max_length=6)
-#
-# class auth_user_groups(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     user_id = models.ForeignKey(auth_user,on_delete = models.PROTECT)
-#     group_id = models.ForeignKey(auth_group,on_delete = models.PROTECT)
-#
-# class auth_user_permissions(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     user_id = models.ForeignKey(auth_user,on_delete = models.PROTECT)
-#     permission_id = models.ForeignKey(auth_permission,on_delete = models.PROTECT)
 
 class departments(models.Model):
     id = models.IntegerField(primary_key=True)

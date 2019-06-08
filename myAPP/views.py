@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 from django.http import HttpResponse
+import time
 def index(request):
     return render(request,'myAPP/login.html')
 def detail(request,num):
@@ -65,13 +66,43 @@ def myself(request):
 @csrf_exempt
 def signIn(request):
     id=attendances.objects.all().count()
-    employeeId = request.POST.get('id')
-    try:
-        sign_already=attendances.objects.get(employee_id=employeeId)
-        return render(request,'myAPP/webhtml/signFalse.html')
-    except BaseException:
-        attendances.objects.create(id=id+1,employee_id=employeeId,arrive_at=0,is_overtime=0)
-        return render(request,'myAPP/webhtml/signResult.html')
+    employeeId = int(request.COOKIES['id'])
+    getTime=time.localtime(time.time())
+    getYear=getTime[0]
+    getMonth=getTime[1]
+    getDay=getTime[2]
+    getHour=getTime[3]
+    getMinute=getTime[4]
+    timeAt=str(getYear)+'-'+str(getMonth)+'-'+str(getDay)+'-'+str(getHour)+':'+str(getMinute)
+    userList = employees.objects.all()
+    userNow = None
+    for userOne in userList:
+        if (employeeId == userOne.id):
+            userNow = userOne
+            break
+    userName=userNow.name
+    if(getHour>=8 and getHour<=11):
+        try:
+            sign_already=attendances.objects.get(employee_id=employeeId)
+            return render(request,'myAPP/webhtml/signFalse.html')
+        except BaseException:
+            attendances.objects.create(id=id+1,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0)
+            return render(request,'myAPP/webhtml/signResult.html')
+    elif(getHour>=14 and getHour<=17):
+        try:
+            employeeOne=attendances.objects.get(employee_id=employeeId)
+            leaveAt=employeeOne.leave_at
+            if(leaveAt!=""):
+                return render(request, 'myAPP/webhtml/signFalse.html')
+            else:
+                employeeOne.leave_at = timeAt
+                employeeOne.save()
+                return render(request, 'myAPP/webhtml/signResult.html')
+        except BaseException:
+            attendances.objects.create(id=id + 1,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
+            return render(request, 'myAPP/webhtml/signResult.html')
+    else:
+        return render(request, 'myAPP/webhtml/signFalse.html')
 
 def selfInfo(request):
     employeeId = int(request.COOKIES["id"])
@@ -101,3 +132,45 @@ def generate_qrcode(request):
 
 def qrform(request):
     return render(request,'myAPP/qrform.html')
+
+def selfInfoEdit(request):
+    employeeId = int(request.COOKIES["id"])
+    userList = employees.objects.all()
+    userNow = None
+    for userOne in userList:
+        if (employeeId == userOne.id):
+            userNow = userOne
+            break
+    print(userNow.name)
+    return render(request,'myAPP/webhtml/selfInfoEdit.html', {"user": userNow})
+
+@csrf_exempt
+def editSub(request):
+    nameGet=''
+    if request.method == 'post':
+        employeeId = int(request.COOKIES["id"])
+        userList = employees.objects.all()
+        userNow = None
+        for userOne in userList:
+            if (employeeId == userOne.id):
+                userNow = userOne
+                break
+        nameGet = request.POST.get("name")
+        birthdayGet = request.POST.get("birthday")
+        userNow.name=nameGet
+        userNow.birthday=birthdayGet
+        userNow.save()
+        return render(request, 'myAPP/webhtml/signResult.html')
+    else:
+        return render(request, 'myAPP/webhtml/signFalse.html')
+
+def workArrangements(request):
+    employeeId = int(request.COOKIES["id"])
+    userList = arrangements.objects.all()
+    userNow = []
+    for userOne in userList:
+        if (employeeId == userOne.employee_id):
+            userNow.append(userOne)
+    #userArrangement=
+    #print(userNow[0].day)
+    return render(request,'myAPP/webhtml/workArrangements.html', {"userArr": userNow})
