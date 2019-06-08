@@ -1,0 +1,140 @@
+{% extends '../base.html' %}
+{% block content-wrapper %}
+    <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        请假、销假
+        <small>申请</small>
+      </h1>
+    </section>
+    <div class="pad margin no-print">
+      <div class="callout callout-info" style="margin-bottom: 0!important;">
+        <h4><i class="fa fa-info"></i> Note:</h4>
+        请假、销假需要部门主管批准，谨慎填写。
+      </div>
+    </div>
+    <!-- Main content -->
+    <section class="content invoice">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-12">
+          <!-- general form elements -->
+
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">申请填写</h3>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <th style="width:50%">姓名:</th>
+                <td>{{ user.name }}</td>
+              </tr>
+              <tr>
+                <th>工号：</th>
+                <td>{{ user.id}}</td>
+              </tr>
+            </table>
+              </div>
+            <div class="box-header with-border">
+              <h3 class="box-title">申请记录（历史最后三条）</h3>
+            </div>
+            <div class="box-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>开始时间</th>
+                  <th>结束时间</th>
+                  <th>理由</th>
+                  <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for one in leave %}
+                    <tr>
+                    <td>
+                        <div class="if/else">
+                            {% if one.type  ==  0 %}
+                                请假
+                            {% elif one.type  ==  1 %}
+                                销假
+                            {% endif %}
+                        </div>
+                    </td>
+                        <td>{{ one.start_date }}</td>
+                    <td>{{ one.end_date }}</td>
+                    <td>{{ one.reason }}</td>
+                    <td>
+                        <div class="if/else">
+                            {% if one.status  ==  0 %}
+                                审批中
+                            {% elif one.status  ==  1 %}
+                                已通过
+                            {% endif %}
+                        </div>
+                    </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <br>
+            <div>
+                <br>
+            </div>
+            <div class="col-md-12">
+                  <div class="box box-info">
+                      <form role="form" action="{% url 'leaveSub' %}" method="post">
+                          <br>
+                        <!-- select -->
+                        <div class="form-group col-md-6">
+                          <label>提交分类</label>
+                          <select class="form-control" name="applicationType">
+                            <option value="0">请假</option>
+                            <option value="1">销假</option>
+                          </select>
+                        </div>
+                          <div class="form-group col-md-6">
+                          <label>事态分类</label>
+                          <select class="form-control">
+                            <option>正常</option>
+                            <option>紧急</option>
+                          </select>
+                        </div>
+                          <div class="box-body">
+                            <div class="form-group">
+                              <label for="exampleInputEmail1">开始时间</label>
+                              <input type="text" class="form-control" name="startTime" required="" placeholder="201X-X-X-12:00">
+                            </div>
+                            <div class="form-group">
+                              <label for="exampleInputPassword1">结束时间</label>
+                              <input type="text" class="form-control" name="endTime" required="" placeholder="201X-X-X-12:00">
+                            </div>
+                            <div class="form-group">
+                              <label for="exampleInputPassword1">理由</label>
+                              <input type="text" class="form-control" name="reason" required="" placeholder="没有？任性……">
+                            </div>
+                          </div>
+                          <!-- /.box-body -->
+
+                          <div class="box-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                          </div>
+            </form>
+                  </div>
+              </div>
+            <!-- form start -->
+
+
+          </div>
+
+          <!-- /.box -->
+        </div>
+      </div>
+    </section>
+    </div>
+{% endblock %}

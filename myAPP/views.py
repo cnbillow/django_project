@@ -44,21 +44,65 @@ def user(request):
     else:
         idGet = request.POST.get("id")
         passwordGet = request.POST.get("password")
-        userList = employees.objects.all()
-        flag = 0
-        userNow=None
-        for userOne in userList:
-            if (idGet == str(userOne.id)):
-                if (passwordGet == userOne.password):
-                    userNow=userOne
+        typeGet = int(request.POST.get("userType"))
+        if(typeGet == 0):
+            userList = employees.objects.all()
+            flag = 0
+            userNow=None
+            for userOne in userList:
+                if (idGet == str(userOne.id)):
+                    if (passwordGet == userOne.password):
+                        userNow=userOne
+                        flag = 1
+                        break
+            if (flag == 1):
+                rep = render(request, 'myAPP/webhtml/myself.html', {"user": userNow})
+                rep.set_cookie("id",userNow.id)
+                return rep
+            else:
+                return render(request, 'myAPP/errorFalse.html')
+        elif(typeGet == 1):
+            depList = departments.objects.all()
+            userList = employees.objects.all()
+            flag = 0
+            for depOne in depList:
+                if (idGet == str(depOne.employee_id)):
                     flag = 1
                     break
-        if (flag == 1):
-            rep = render(request, 'myAPP/webhtml/myself.html', {"user": userNow})
-            rep.set_cookie("id",userNow.id)
-            return rep
+            if(flag == 1):
+                userNow = None
+                print("#######")
+                for userOne in userList:
+                    if (idGet == str(userOne.id)):
+                        if (passwordGet == userOne.password):
+                            userNow = userOne
+                            flag = 2
+                            break
+                if (flag == 2):
+                    rep = render(request, 'myAPP/webhtml/myself.html', {"user": userNow})
+                    rep.set_cookie("id", userNow.id)
+                    return rep
+                else:
+                    return render(request, 'myAPP/errorFalse.html')
+            else:
+                return render(request, 'myAPP/errorFalse.html')
         else:
-            return render(request, 'myAPP/errorFalse.html')
+            managerList = managers.objects.all()
+            flag = 0
+            userNow = None
+            for userOne in managerList:
+                if (idGet == str(userOne.id)):
+                    if (passwordGet == userOne.password):
+                        userNow = userOne
+                        flag = 1
+                        break
+            if (flag == 1):
+                rep = render(request, 'myAPP/webhtml/myself.html', {"user": userNow})
+                rep.set_cookie("id", userNow.id)
+                return rep
+            else:
+                return render(request, 'myAPP/errorFalse.html')
+
 
 def myself(request):
     return render(request,'myAPP/webhtml/myself.html')
@@ -146,7 +190,6 @@ def selfInfoEdit(request):
 
 @csrf_exempt
 def editSub(request):
-    nameGet=''
     if request.method == 'post':
         employeeId = int(request.COOKIES["id"])
         userList = employees.objects.all()
@@ -171,6 +214,62 @@ def workArrangements(request):
     for userOne in userList:
         if (employeeId == userOne.employee_id):
             userNow.append(userOne)
-    #userArrangement=
-    #print(userNow[0].day)
     return render(request,'myAPP/webhtml/workArrangements.html', {"userArr": userNow})
+
+def leaveWork(request):
+    employeeId = int(request.COOKIES["id"])
+    userList = employees.objects.all()
+    userLeave = leaves.objects.all()
+    userNow = None
+    leaveInfo = []
+    for userOne in userList:
+        if (employeeId == userOne.id):
+            userNow = userOne
+            break
+    for leaveOne in userLeave:
+        if (employeeId == leaveOne.employee_id_id):
+            leaveInfo.append(leaveOne)
+    if(len(leaveInfo)>=3):
+        return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo[-3:]})
+    else:
+        return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo})
+
+def workOvertime(request):
+    employeeId = int(request.COOKIES["id"])
+    userList = employees.objects.all()
+    userOver = overtimes.objects.all()
+    userNow = None
+    overInfo = []
+    for userOne in userList:
+        if (employeeId == userOne.id):
+            userNow = userOne
+            break
+    for overOne in userOver:
+        if (employeeId == overOne.employee_id_id):
+            overInfo.append(overOne)
+    if(len(overInfo)>=3):
+        return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo[-3:]})
+    else:
+        return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo})
+
+@csrf_exempt
+def leaveSub(request):
+    startGet = request.POST.get("startTime")
+    endGet = request.POST.get("endTime")
+    reasonGet = request.POST.get("reason")
+    employeeId = int(request.COOKIES["id"])
+    typeGet=request.POST.get("applicationType")
+    id = leaves.objects.all().count()
+    leaves.objects.create(id=id+1,employee_id_id=employeeId,type=typeGet,start_date=startGet,end_date=endGet,reason=reasonGet,status=0)
+    return render(request,'myAPP/webhtml/workRight.html')
+
+@csrf_exempt
+def overSub(request):
+    startGet = request.POST.get("startTime")
+    endGet = request.POST.get("endTime")
+    reasonGet = request.POST.get("reason")
+    employeeId = int(request.COOKIES["id"])
+    id = leaves.objects.all().count()
+    print(startGet)
+    overtimes.objects.create(id=id + 1, employee_id_id=employeeId, start_time=startGet, end_time=endGet,reason=reasonGet, status=0)
+    return render(request, 'myAPP/webhtml/workRight.html')

@@ -40,7 +40,7 @@
 
   <header class="main-header">
     <!-- Logo -->
-    <a href="#" class="logo">
+    <a href="{% url 'myself' %}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>考勤</b></span>
       <!-- logo for regular state and mobile devices -->
@@ -107,29 +107,12 @@
                 <img src="/static/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
                 <p>
-                  {{ user.name }}
-                  <small>部门ID：{{ user.department_id }}生日：{{ user.birthday }}</small>
+                  苍穹山岚，沧海无澜。
                 </p>
               </li>
-              <!-- Menu Body -->
-              <li class="user-body">
-                <div class="row">
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Department</a>
-                  </div>
-                  <div class="col-xs-4 text-center">
-                    <a href="#">More Details</a>
-                  </div>
-                  <div class="col-xs-4 text-center">
-                    <a href="#">Friends</a>
-                  </div>
-                </div>
-                <!-- /.row -->
-              </li>
-              <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-right">
-                  <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                  <a href="{% url 'user' %}" class="btn btn-default btn-flat">Sign out</a>
                 </div>
               </li>
             </ul>
@@ -173,9 +156,6 @@
         <li >
           <a href="{% url 'selfInfo' %}">
             <i class="fa fa-circle-o text-red"></i> <span>个人信息</span>
-            <span class="pull-right-container">
-              <span class="label label-primary pull-right">0</span>
-            </span>
           </a>
         </li>
         <li class="treeview">
@@ -187,9 +167,9 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="#"><i class="fa fa-circle-o"></i> 请假</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i> 销假</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i> 进度查看</a></li>
+            <li><a href="{% url 'leaveWork' %}"><i class="fa fa-circle-o"></i> 请假</a></li>
+            <li><a href="{% url 'leaveWork' %}"><i class="fa fa-circle-o"></i> 销假</a></li>
+            <li><a href="{% url 'leaveWork' %}"><i class="fa fa-circle-o"></i> 进度查看</a></li>
           </ul>
         </li>
         <li class="treeview">
@@ -200,32 +180,20 @@
             </span>
           </a>
             <ul class="treeview-menu">
-            <li><a href="#"><i class="fa fa-circle-o"></i> 申请加班</a></li>
-            <li><a href="#"><i class="fa fa-circle-o"></i> 进度查看</a></li>
+            <li><a href="{% url 'workOvertime' %}"><i class="fa fa-circle-o"></i> 申请加班</a></li>
+            <li><a href="{% url 'workOvertime' %}"><i class="fa fa-circle-o"></i> 进度查看</a></li>
           </ul>
         </li>
         <li>
-          <a href="#">
+          <a href="{% url 'workArrangements' %}">
             <i class="fa fa-circle-o text-aqua"></i>
             <span>工作班次</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-            <span class="pull-right-container">
-              <span class="label label-primary pull-right">0</span>
-            </span>
           </a>
         </li>
         <li>
           <a href="#">
             <i class="fa fa-circle-o text-teal"></i>
             <span>设置</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-            <span class="pull-right-container">
-              <span class="label label-primary pull-right">0</span>
-            </span>
           </a>
         </li>
       </ul>
@@ -259,103 +227,19 @@
         <ul class="control-sidebar-menu">
           <li>
             <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-
-                <p>Will be 23 on April 24th</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-user bg-yellow"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-
-                <p>New phone +1(800)555-1234</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
               <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
 
               <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
+                <h4 class="control-sidebar-subheading">Nothing</h4>
 
-                <p>nora@example.com</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <i class="menu-icon fa fa-file-code-o bg-green"></i>
-
-              <div class="menu-info">
-                <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-
-                <p>Execution time 5 seconds</p>
+                <p>Nothing to do.</p>
               </div>
             </a>
           </li>
         </ul>
         <!-- /.control-sidebar-menu -->
 
-        <h3 class="control-sidebar-heading">Tasks Progress</h3>
-        <ul class="control-sidebar-menu">
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Custom Template Design
-                <span class="label label-danger pull-right">70%</span>
-              </h4>
 
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Update Resume
-                <span class="label label-success pull-right">95%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Laravel Integration
-                <span class="label label-warning pull-right">50%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="javascript:void(0)">
-              <h4 class="control-sidebar-subheading">
-                Back End Framework
-                <span class="label label-primary pull-right">68%</span>
-              </h4>
-
-              <div class="progress progress-xxs">
-                <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-              </div>
-            </a>
-          </li>
-        </ul>
-        <!-- /.control-sidebar-menu -->
 
       </div>
       <!-- /.tab-pane -->

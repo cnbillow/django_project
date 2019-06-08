@@ -22,7 +22,7 @@ class attendances(models.Model):
 class departments(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
-    director_id = models.IntegerField()
+    employee_id = models.IntegerField(default=0)
 
 class employees(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -30,7 +30,7 @@ class employees(models.Model):
     birthday = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     department_id = models.ForeignKey(departments,on_delete = models.PROTECT)
-    arrange_id = models.ForeignKey(arrangements,on_delete = models.PROTECT)
+    #arrange_id = models.ForeignKey(arrangements,on_delete = models.PROTECT)
 
 #测试时使用的表，不要轻易删除
 class empyt(models.Model):
@@ -49,12 +49,15 @@ class managers(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
+    birthday = models.CharField(max_length=255,default='')
 
 class overtimes(models.Model):
     id = models.IntegerField(primary_key=True)
     start_time = models.CharField(max_length=255)
     end_time = models.CharField(max_length=255)
-    date = models.CharField(max_length=255)
+    reason = models.CharField(max_length=255,default='')
+    status = models.SmallIntegerField(max_length=4,default=0)
+    employee_id = models.ForeignKey(employees, on_delete=models.CASCADE,default=0)
 
 class temp_arrangements(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -64,4 +67,4 @@ class temp_arrangements(models.Model):
     end_date = models.CharField(max_length=255)
     employee_id = models.ForeignKey(employees,on_delete = models.CASCADE)
 
-#departments.id = models.ForeignKey(employees,on_delete = models.SET_NULL)
+departments.employee_id = models.ForeignKey(employees,on_delete = models.SET_NULL)
