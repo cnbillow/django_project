@@ -29,4 +29,8 @@ urlpatterns = [
     path(r'user/leaveWork/leaveSub/',views.leaveSub,name='leaveSub'),
     #加班申请提交
     path(r'user/workOvertime/overSub/',views.overSub,name='overSub'),
+    #批准请假、销假
+    path(r'user/approval/',views.approval,name='approval'),
+    #请教、销假批准提交
+    path(r'user/approval/arovalSub',views.approvalSub,name='approvalSub')
 ]

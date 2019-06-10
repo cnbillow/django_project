@@ -6,7 +6,7 @@
     <section class="content-header">
       <h1>
         功能区
-        <small>页面</small>
+        <small>主管页面</small>
       </h1>
     </section>
 
@@ -69,6 +69,36 @@
             </div>
             <div class="icon">
               <i class="ion ion-pie-graph"></i>
+            </div>
+            <a href="{% url 'workOvertime' %}" class="small-box-footer">更多信息 <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-purple">
+            <div class="inner">
+              <h3>审批</h3>
+
+              <p>请假申请</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-edit"></i>
+            </div>
+            <a href="{% url 'approval' %}" class="small-box-footer">更多信息 <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-teal">
+            <div class="inner">
+              <h3>安排</h3>
+
+              <p>工作班次</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-checkmark"></i>
             </div>
             <a href="{% url 'workOvertime' %}" class="small-box-footer">更多信息 <i class="fa fa-arrow-circle-right"></i></a>
           </div>
