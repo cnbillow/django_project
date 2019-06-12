@@ -36,7 +36,7 @@ def login(request):
         else:
             return render(request, 'myAPP/errorFalse.html')
 
-
+#登录逻辑判断
 @csrf_exempt
 def user(request):
     if request.method == "GET":
@@ -54,18 +54,6 @@ def user(request):
                 return rep
             except:
                 return render(request, 'myAPP/errorFalse.html')
-            # userList = employees.objects.all()
-            # flag = 0
-            # userNow=None
-            #
-            # for userOne in userList:
-            #     if (idGet == str(userOne.id)):
-            #         if (passwordGet == userOne.password):
-            #             userNow=userOne
-            #             flag = 1
-            #             break
-            # if (flag == 1):
-
         elif(typeGet == 1):
             try:
                 userNow=departments.objects.get(employee_id=idGet)
@@ -86,10 +74,17 @@ def user(request):
             except:
                 return render(request, 'myAPP/errorFalse.html')
 
-
+#用于页面跳转
 def myself(request):
-    return render(request,'myAPP/webhtml/myself.html')
+    typeGet = int(request.COOKIES["type"])
+    if(typeGet==0):
+        return render(request,'myAPP/webhtml/myself.html')
+    elif(typeGet==1):
+        return render(request, 'myAPP/webhtml/supervisorMyself.html')
+    else:
+        return render(request, 'myAPP/webhtml/managerMyself.html')
 
+#用于打卡
 @csrf_exempt
 def signIn(request):
     id=attendances.objects.all().count()
@@ -126,16 +121,17 @@ def signIn(request):
     else:
         return render(request, 'myAPP/webhtml/signFalse.html')
 
+#查看个人信息
 def selfInfo(request):
     employeeId = int(request.COOKIES["id"])
     userNow = employees.objects.get(id=employeeId)
     return render(request,'myAPP/webhtml/selfInformation.html', {"user": userNow})
 
-
 #二维码获取
 import qrcode
 from django.utils.six import BytesIO
 
+#生成打卡二维码，暂时不用
 def generate_qrcode(request):
     website = request.POST.get('website')
     if (len(website) != 0):
@@ -150,12 +146,14 @@ def generate_qrcode(request):
 def qrform(request):
     return render(request,'myAPP/qrform.html')
 
+#修改个人信息
 def selfInfoEdit(request):
     employeeId = int(request.COOKIES["id"])
     userNow = employees.objects.get(id=employeeId)
     print(userNow.name)
     return render(request,'myAPP/webhtml/selfInfoEdit.html', {"user": userNow})
 
+#个人信息修改后提交
 @csrf_exempt
 def editSub(request):
     if request.method == 'post':
@@ -170,11 +168,13 @@ def editSub(request):
     else:
         return render(request, 'myAPP/webhtml/signFalse.html')
 
+#查看工作班次
 def workArrangements(request):
     employeeId = int(request.COOKIES["id"])
     userNow=arrangements.objects.filter(employee_id=employeeId)
     return render(request,'myAPP/webhtml/workArrangements.html', {"userArr": userNow})
 
+#请假销假页面
 def leaveWork(request):
     employeeId = int(request.COOKIES["id"])
     userNow = employees.objects.get(id=employeeId)
@@ -188,7 +188,7 @@ def leaveWork(request):
     else:
         return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo})
 
-
+#加班页面
 def workOvertime(request):
     employeeId = int(request.COOKIES["id"])
     userNow = employees.objects.get(id=employeeId)
@@ -202,6 +202,7 @@ def workOvertime(request):
     else:
         return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo})
 
+#请假提交
 @csrf_exempt
 def leaveSub(request):
     startGet = request.POST.get("startTime")
@@ -213,38 +214,86 @@ def leaveSub(request):
     leaves.objects.create(id=id+1,employee_id_id=employeeId,type=typeGet,start_date=startGet,end_date=endGet,reason=reasonGet,status=0)
     return render(request,'myAPP/webhtml/workRight.html')
 
+#加班提交
 @csrf_exempt
 def overSub(request):
     startGet = request.POST.get("startTime")
     endGet = request.POST.get("endTime")
     reasonGet = request.POST.get("reason")
     employeeId = int(request.COOKIES["id"])
-    id = leaves.objects.all().count()
+    id = overtimes.objects.all().count()
     print(startGet)
     overtimes.objects.create(id=id + 1, employee_id_id=employeeId, start_time=startGet, end_time=endGet,reason=reasonGet, status=0)
     return render(request, 'myAPP/webhtml/workRight.html')
 
+#审批页面
 @csrf_exempt
 def approval(request):
-    leaveList = leaves.objects.all()
-    leavesArrange = leaves.objects.filter(status=0)
-    return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":leavesArrange})
+    typeGet = int(request.COOKIES["type"])
+    if (typeGet == 1):
+        leavesArrange = leaves.objects.filter(status=0)
+        return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":leavesArrange,"type":typeGet})
+    elif(typeGet == 2):
+        oversArrange = overtimes.objects.filter(status=0)
+        return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":oversArrange,"type":typeGet})
+    else:
+        return render(request,'myAPP/webhtml/workFalse.html')
 
+#审批提交
 @csrf_exempt
 def approvalSub(request):
-    num = 1
+    typeGet = int(request.COOKIES["type"])
+    if(typeGet==1):
+        leavesList=leaves.objects.all()
+        num=1
+        for i in leavesList:
+            if(i.status==0):
+                break
+            else:
+                num=num+1
+    elif(typeGet==2):
+        oversList = overtimes.objects.all()
+        num = 1
+        for i in oversList:
+            if (i.status == 0):
+                break
+            else:
+                num = num + 1
+    else:
+        num=1
+    print(num)
     while(1):
         try:
             statusGet=request.POST.get("info"+str(num))
-            if(statusGet!=0 and statusGet!=None):
-                changeStatus(num,statusGet)
+            if(statusGet == None):
+                break
+            elif(statusGet!=0):
+                changeStatus(num,statusGet,typeGet)
             num=num+1
         except:
             break
     return render(request, 'myAPP/webhtml/workRight.html')
 
-def changeStatus(num,status):
-    leaveOne=leaves.objects.get(id=num)
-    leaveOne.status=status
-    leaveOne.save()
+#审批用的修改申请状态
+def changeStatus(num,status,typeGet):
+    if(typeGet == 1):
+        leaveOne=leaves.objects.get(id=num)
+        leaveOne.status=status
+        leaveOne.save()
+    elif(typeGet == 2):
+        overOne = overtimes.objects.get(id=num)
+        overOne.status = status
+        overOne.save()
 
+#经理查看全体员工的信息
+def userDetails(request):
+    employeesList=employees.objects.all()
+    return render(request, 'myAPP/webhtml/employeesInfo.html', {"employeesInfos": employeesList})
+
+#经理对员工信息的操作
+@csrf_exempt
+def changeDetails(request):
+    return render(request,'myAPP/webhtml/workRight.html')
+
+def add(request):
+    return render(request,'myAPP/webhtml/member-add.html')

@@ -40,8 +40,8 @@ class leaves(models.Model):
     id = models.IntegerField(primary_key=True)
     type = models.SmallIntegerField(max_length=4)
     status = models.SmallIntegerField(max_length=4)
-    start_date = models.CharField(max_length=255)
-    end_date = models.CharField(max_length=255)
+    start_time = models.CharField(max_length=255)
+    end_time = models.CharField(max_length=255)
     reason = models.CharField(max_length=255)
     employee_id = models.ForeignKey(employees,on_delete = models.CASCADE)
 

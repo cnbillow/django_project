@@ -32,5 +32,11 @@ urlpatterns = [
     #批准请假、销假
     path(r'user/approval/',views.approval,name='approval'),
     #请教、销假批准提交
-    path(r'user/approval/arovalSub',views.approvalSub,name='approvalSub')
+    path(r'user/approval/arovalSub',views.approvalSub,name='approvalSub'),
+    #经理管理员工信息
+    path(r'user/userDetails',views.userDetails,name='userDetails'),
+    #经理按键
+    path(r'user/userDetails/change',views.changeDetails,name='changeDetails'),
+    path(r'user/member-add.html',views.add,name='add'),
+
 ]
