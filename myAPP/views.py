@@ -40,8 +40,21 @@ def login(request):
 @csrf_exempt
 def user(request):
     if request.method == "GET":
-        return render(request, 'myAPP/login.html')
+        rep = render(request, 'myAPP/login.html')
+        try:
+            employeeId = int(request.COOKIES["id"])
+            del request.COOKIES["id"]
+            typeGet = int(request.COOKIES["type"])
+            del request.COOKIES["type"]
+            rep.delete_cookie("id")
+            rep.delete_cookie("type")
+            print("删除cookies")
+        except:
+            print("cookies已经删除")
+            pass
+        return rep
     else:
+        print("post请求的页面")
         idGet = request.POST.get("id")
         passwordGet = request.POST.get("password")
         typeGet = int(request.POST.get("userType"))
@@ -76,56 +89,65 @@ def user(request):
 
 #用于页面跳转
 def myself(request):
-    typeGet = int(request.COOKIES["type"])
-    if(typeGet==0):
-        return render(request,'myAPP/webhtml/myself.html')
-    elif(typeGet==1):
-        return render(request, 'myAPP/webhtml/supervisorMyself.html')
+    if(isLognIn(request)==1):
+        typeGet = int(request.COOKIES["type"])
+        if(typeGet==0):
+            return render(request,'myAPP/webhtml/myself.html')
+        elif(typeGet==1):
+            return render(request, 'myAPP/webhtml/supervisorMyself.html')
+        else:
+            return render(request, 'myAPP/webhtml/managerMyself.html')
     else:
-        return render(request, 'myAPP/webhtml/managerMyself.html')
+        return render(request,'myAPP/login.html')
 
 #用于打卡
 @csrf_exempt
 def signIn(request):
-    id=attendances.objects.all().count()
-    employeeId = int(request.COOKIES['id'])
-    getTime=time.localtime(time.time())
-    getYear=getTime[0]
-    getMonth=getTime[1]
-    getDay=getTime[2]
-    getHour=getTime[3]
-    getMinute=getTime[4]
-    timeAt=str(getYear)+'-'+str(getMonth)+'-'+str(getDay)+'-'+str(getHour)+':'+str(getMinute)
-    userNow=employees.objects.get(id=employeeId)
-    userName=userNow.name
-    if(getHour>=8 and getHour<=11):
-        try:
-            sign_already=attendances.objects.get(employee_id=employeeId)
-            return render(request,'myAPP/webhtml/signFalse.html')
-        except BaseException:
-            attendances.objects.create(id=id+1,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0)
-            return render(request,'myAPP/webhtml/signResult.html')
-    elif(getHour>=14 and getHour<=17):
-        try:
-            employeeOne=attendances.objects.get(employee_id=employeeId)
-            leaveAt=employeeOne.leave_at
-            if(leaveAt!=""):
-                return render(request, 'myAPP/webhtml/signFalse.html')
-            else:
-                employeeOne.leave_at = timeAt
-                employeeOne.save()
+    if(isLognIn(request)==1):
+        id=attendances.objects.all().count()
+        employeeId = int(request.COOKIES['id'])
+        getTime=time.localtime(time.time())
+        getYear=getTime[0]
+        getMonth=getTime[1]
+        getDay=getTime[2]
+        getHour=getTime[3]
+        getMinute=getTime[4]
+        timeAt=str(getYear)+'-'+str(getMonth)+'-'+str(getDay)+'-'+str(getHour)+':'+str(getMinute)
+        userNow=employees.objects.get(id=employeeId)
+        userName=userNow.name
+        if(getHour>=8 and getHour<=11):
+            try:
+                sign_already=attendances.objects.get(employee_id=employeeId)
+                return render(request,'myAPP/webhtml/signFalse.html')
+            except BaseException:
+                attendances.objects.create(id=id+1,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0)
+                return render(request,'myAPP/webhtml/signResult.html')
+        elif(getHour>=14 and getHour<=17):
+            try:
+                employeeOne=attendances.objects.get(employee_id=employeeId)
+                leaveAt=employeeOne.leave_at
+                if(leaveAt!=""):
+                    return render(request, 'myAPP/webhtml/signFalse.html')
+                else:
+                    employeeOne.leave_at = timeAt
+                    employeeOne.save()
+                    return render(request, 'myAPP/webhtml/signResult.html')
+            except BaseException:
+                attendances.objects.create(id=id + 1,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
                 return render(request, 'myAPP/webhtml/signResult.html')
-        except BaseException:
-            attendances.objects.create(id=id + 1,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
-            return render(request, 'myAPP/webhtml/signResult.html')
+        else:
+            return render(request, 'myAPP/webhtml/signFalse.html')
     else:
-        return render(request, 'myAPP/webhtml/signFalse.html')
+        return render(request, 'myAPP/login.html')
 
 #查看个人信息
 def selfInfo(request):
-    employeeId = int(request.COOKIES["id"])
-    userNow = employees.objects.get(id=employeeId)
-    return render(request,'myAPP/webhtml/selfInformation.html', {"user": userNow})
+    if(isLognIn(request)==1):
+        employeeId = int(request.COOKIES["id"])
+        userNow = employees.objects.get(id=employeeId)
+        return render(request,'myAPP/webhtml/selfInformation.html', {"user": userNow})
+    else:
+        return render(request, 'myAPP/login.html')
 
 #二维码获取
 import qrcode
@@ -148,131 +170,193 @@ def qrform(request):
 
 #修改个人信息
 def selfInfoEdit(request):
-    employeeId = int(request.COOKIES["id"])
-    userNow = employees.objects.get(id=employeeId)
-    print(userNow.name)
-    return render(request,'myAPP/webhtml/selfInfoEdit.html', {"user": userNow})
+    if(isLognIn(request)==1):
+        employeeId = int(request.COOKIES["id"])
+        userNow = employees.objects.get(id=employeeId)
+        print(userNow.name)
+        return render(request,'myAPP/webhtml/selfInfoEdit.html', {"user": userNow})
+    else:
+        return render(request, 'myAPP/login.html')
 
 #个人信息修改后提交
 @csrf_exempt
 def editSub(request):
-    if request.method == 'post':
-        employeeId = int(request.COOKIES["id"])
-        userNow = employees.objects.get(id=employeeId)
-        nameGet = request.POST.get("name")
-        birthdayGet = request.POST.get("birthday")
-        userNow.name=nameGet
-        userNow.birthday=birthdayGet
-        userNow.save()
-        return render(request, 'myAPP/webhtml/signResult.html')
+    if(isLognIn(request)==1):
+        if request.method == 'post':
+            employeeId = int(request.COOKIES["id"])
+            userNow = employees.objects.get(id=employeeId)
+            nameGet = request.POST.get("name")
+            birthdayGet = request.POST.get("birthday")
+            userNow.name=nameGet
+            userNow.birthday=birthdayGet
+            userNow.save()
+            return render(request, 'myAPP/webhtml/signResult.html')
+        else:
+            return render(request, 'myAPP/webhtml/signFalse.html')
     else:
-        return render(request, 'myAPP/webhtml/signFalse.html')
+        return render(request, 'myAPP/login.html')
 
 #查看工作班次
 def workArrangements(request):
-    employeeId = int(request.COOKIES["id"])
-    userNow=arrangements.objects.filter(employee_id=employeeId)
-    return render(request,'myAPP/webhtml/workArrangements.html', {"userArr": userNow})
+    if(isLognIn(request)==1):
+        employeeId = int(request.COOKIES["id"])
+        userNow=arrangements.objects.filter(employee_id=employeeId)
+        return render(request,'myAPP/webhtml/workArrangements.html', {"userArr": userNow})
+    else:
+        return render(request,'myAPP/login.html')
 
 #请假销假页面
 def leaveWork(request):
-    employeeId = int(request.COOKIES["id"])
-    userNow = employees.objects.get(id=employeeId)
-    userLeave = leaves.objects.all()
-    leaveInfo = []
-    for leaveOne in userLeave:
-        if (employeeId == leaveOne.employee_id_id):
-            leaveInfo.append(leaveOne)
-    if(len(leaveInfo)>=3):
-        return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo[-3:]})
+    if(isLognIn(request)==1):
+        employeeId = int(request.COOKIES["id"])
+        userNow = employees.objects.get(id=employeeId)
+        userLeave = leaves.objects.all()
+        leaveInfo = []
+        for leaveOne in userLeave:
+            if (employeeId == leaveOne.employee_id_id):
+                leaveInfo.append(leaveOne)
+        if(len(leaveInfo)>=3):
+            return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo[-3:]})
+        else:
+            return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo})
     else:
-        return render(request, 'myAPP/webhtml/leaveWorkApplication.html', {"user": userNow, "leave": leaveInfo})
+        return render(request, 'myAPP/login.html')
 
 #加班页面
 def workOvertime(request):
-    employeeId = int(request.COOKIES["id"])
-    userNow = employees.objects.get(id=employeeId)
-    overInfo = []
-    userOver = overtimes.objects.all()
-    for overOne in userOver:
-        if (employeeId == overOne.employee_id_id):
-            overInfo.append(overOne)
-    if(len(overInfo)>=3):
-        return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo[-3:]})
+    if(isLognIn(request)==1):
+        employeeId = int(request.COOKIES["id"])
+        userNow = employees.objects.get(id=employeeId)
+        overInfo = []
+        userOver = overtimes.objects.all()
+        for overOne in userOver:
+            if (employeeId == overOne.employee_id_id):
+                overInfo.append(overOne)
+        if(len(overInfo)>=3):
+            return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo[-3:]})
+        else:
+            return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo})
     else:
-        return render(request, 'myAPP/webhtml/workOvertimeApplication.html', {"user": userNow, "over": overInfo})
+        return render(request, 'myAPP/login.html')
 
 #请假提交
 @csrf_exempt
 def leaveSub(request):
-    startGet = request.POST.get("startTime")
-    endGet = request.POST.get("endTime")
-    reasonGet = request.POST.get("reason")
-    employeeId = int(request.COOKIES["id"])
-    typeGet=request.POST.get("applicationType")
-    id = leaves.objects.all().count()
-    leaves.objects.create(id=id+1,employee_id_id=employeeId,type=typeGet,start_date=startGet,end_date=endGet,reason=reasonGet,status=0)
-    return render(request,'myAPP/webhtml/workRight.html')
+    if(isLognIn(request)==1):
+        startGet = request.POST.get("startTime")
+        endGet = request.POST.get("endTime")
+        reasonGet = request.POST.get("reason")
+        employeeId = int(request.COOKIES["id"])
+        typeGet=request.POST.get("applicationType")
+        id = leaves.objects.all().count()
+        leaves.objects.create(id=id+1,employee_id_id=employeeId,type=typeGet,start_date=startGet,end_date=endGet,reason=reasonGet,status=0)
+        return render(request,'myAPP/webhtml/workRight.html')
+    else:
+        return render(request, 'myAPP/login.html')
 
 #加班提交
 @csrf_exempt
 def overSub(request):
-    startGet = request.POST.get("startTime")
-    endGet = request.POST.get("endTime")
-    reasonGet = request.POST.get("reason")
-    employeeId = int(request.COOKIES["id"])
-    id = overtimes.objects.all().count()
-    print(startGet)
-    overtimes.objects.create(id=id + 1, employee_id_id=employeeId, start_time=startGet, end_time=endGet,reason=reasonGet, status=0)
-    return render(request, 'myAPP/webhtml/workRight.html')
+    if(isLognIn(request)==1):
+        startGet = request.POST.get("startTime")
+        endGet = request.POST.get("endTime")
+        reasonGet = request.POST.get("reason")
+        employeeId = int(request.COOKIES["id"])
+        id = overtimes.objects.all().count()
+        print(startGet)
+        overtimes.objects.create(id=id + 1, employee_id_id=employeeId, start_time=startGet, end_time=endGet,reason=reasonGet, status=0)
+        return render(request, 'myAPP/webhtml/workRight.html')
+    else:
+        return render(request, 'myAPP/login.html')
 
 #审批页面
 @csrf_exempt
 def approval(request):
-    typeGet = int(request.COOKIES["type"])
-    if (typeGet == 1):
-        leavesArrange = leaves.objects.filter(status=0)
-        return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":leavesArrange,"type":typeGet})
-    elif(typeGet == 2):
-        oversArrange = overtimes.objects.filter(status=0)
-        return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":oversArrange,"type":typeGet})
+    if(isLognIn(request)==1):
+        typeGet = int(request.COOKIES["type"])
+        if (typeGet == 1):
+            leavesArrange = leaves.objects.filter(status=0)
+            return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":leavesArrange,"type":typeGet})
+        elif(typeGet == 2):
+            oversArrange = overtimes.objects.filter(status=0)
+            return render(request,'myAPP/webhtml/approval.html',{"leaveInfos":oversArrange,"type":typeGet})
+        else:
+            return render(request,'myAPP/webhtml/workFalse.html')
     else:
-        return render(request,'myAPP/webhtml/workFalse.html')
+        return render(request,'myAPP/login.html')
 
 #审批提交
 @csrf_exempt
 def approvalSub(request):
-    typeGet = int(request.COOKIES["type"])
-    if(typeGet==1):
-        leavesList=leaves.objects.all()
-        num=1
-        for i in leavesList:
-            if(i.status==0):
-                break
-            else:
+    if(isLognIn(request)==1):
+        typeGet = int(request.COOKIES["type"])
+        if(typeGet==1):
+            leavesList=leaves.objects.all()
+            num=1
+            for i in leavesList:
+                if(i.status==0):
+                    break
+                else:
+                    num=num+1
+        elif(typeGet==2):
+            oversList = overtimes.objects.all()
+            num = 1
+            for i in oversList:
+                if (i.status == 0):
+                    break
+                else:
+                    num = num + 1
+        else:
+            num=1
+        print(num)
+        while(1):
+            try:
+                statusGet=request.POST.get("info"+str(num))
+                if(statusGet == None):
+                    break
+                elif(statusGet!=0):
+                    changeStatus(num,statusGet,typeGet)
                 num=num+1
-    elif(typeGet==2):
-        oversList = overtimes.objects.all()
-        num = 1
-        for i in oversList:
-            if (i.status == 0):
+            except:
                 break
-            else:
-                num = num + 1
+        return render(request, 'myAPP/webhtml/workRight.html')
     else:
-        num=1
-    print(num)
-    while(1):
-        try:
-            statusGet=request.POST.get("info"+str(num))
-            if(statusGet == None):
-                break
-            elif(statusGet!=0):
-                changeStatus(num,statusGet,typeGet)
-            num=num+1
-        except:
-            break
-    return render(request, 'myAPP/webhtml/workRight.html')
+        return render(request, 'myAPP/login.html')
+
+
+#经理查看全体员工的信息
+def userDetails(request):
+    if(isLognIn(request)==1):
+        employeesList=employees.objects.all()
+        return render(request, 'myAPP/webhtml/employeesInfo.html', {"employeesInfos": employeesList})
+    else:
+        return render(request,'myAPP/login.html')
+
+#经理对员工信息的操作
+@csrf_exempt
+def changeDetails(request):
+    if (isLognIn(request) == 1):
+        return render(request,'myAPP/webhtml/workRight.html')
+    else:
+        return render(request,'myAPP/login.html')
+
+def add(request):
+    if (isLognIn(request) == 1):
+        return render(request,'myAPP/webhtml/member-add.html')
+    else:
+        return render(request,'myAPP/login.html')
+
+
+#验证登录状态
+def isLognIn(request):
+    try:
+        employeeId = int(request.COOKIES["id"])
+        typeGet = int(request.COOKIES["type"])
+        print("有cookies")
+        return 1
+    except:
+        print("没有cookies")
+        return 0
 
 #审批用的修改申请状态
 def changeStatus(num,status,typeGet):
@@ -284,16 +368,3 @@ def changeStatus(num,status,typeGet):
         overOne = overtimes.objects.get(id=num)
         overOne.status = status
         overOne.save()
-
-#经理查看全体员工的信息
-def userDetails(request):
-    employeesList=employees.objects.all()
-    return render(request, 'myAPP/webhtml/employeesInfo.html', {"employeesInfos": employeesList})
-
-#经理对员工信息的操作
-@csrf_exempt
-def changeDetails(request):
-    return render(request,'myAPP/webhtml/workRight.html')
-
-def add(request):
-    return render(request,'myAPP/webhtml/member-add.html')
