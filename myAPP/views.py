@@ -324,16 +324,7 @@ def userDetails(request):
     else:
         return render(request,'myAPP/login.html')
 
-#经理对员工信息的操作，页面上的提交按键
-@csrf_exempt
-def changeDetails(request):
-    if (isLognIn(request) == 1):
-        print("waiting for more..")
-        return render(request,'myAPP/webhtml/workRight.html')
-    else:
-        return render(request,'myAPP/login.html')
-
-#弹窗
+#编辑弹窗
 def singleEdit(request,arg):
     if (isLognIn(request) == 1):
         idGet=int(arg)
@@ -342,21 +333,48 @@ def singleEdit(request,arg):
     else:
         return render(request,'myAPP/login.html')
 
+#删除弹窗
+def singleDel(request,arg):
+    if (isLognIn(request) == 1):
+        employees.objects.get(id=int(arg)).delete()
+        return render(request, 'myAPP/webhtml/workRight.html')
+    else:
+        return render(request,'myAPP/login.html')
+
+@csrf_exempt
+def singleAdd(request):
+    if (isLognIn(request) == 1):
+        return render(request, 'myAPP/webhtml/memberAdd.html')
+    else:
+        return render(request,'myAPP/login.html')
+
 #弹窗的表单提交
 @csrf_exempt
 def singleEditSub(request):
-    print("singleEditSub")
     if(isLognIn(request)==1):
         oldIdGet=request.POST.get("oldId")
-        print(oldIdGet)
+        employeeOne = employees.objects.get(id=oldIdGet)
         nameGet = request.POST.get("username")
-        print(nameGet)
         idGet = request.POST.get("userid")
         passwordGet = request.POST.get("password")
         departmentGet = request.POST.get("departmentid")
+        employeeOne.name=nameGet
+        employeeOne.id=idGet
+        employeeOne.password=passwordGet
+        employeeOne.department_id_id=departmentGet
+        employeeOne.save()
         return render(request,'myAPP/webhtml/workRight.html')
     else:
         return render(request,'myAPP/login.html')
+
+@csrf_exempt
+def singleAddSub(request):
+    nameGet = request.POST.get("username")
+    idGet = request.POST.get("userid")
+    passwordGet = request.POST.get("password")
+    departmentGet = request.POST.get("departmentid")
+    employees.objects.create(id=int(idGet),name=nameGet,password=passwordGet,department_id_id=int(departmentGet))
+    return render(request,'myAPP/webhtml/workRight.html')
 
 #验证登录状态
 def isLognIn(request):

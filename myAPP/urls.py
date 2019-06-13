@@ -35,10 +35,14 @@ urlpatterns = [
     path(r'user/approval/arovalSub',views.approvalSub,name='approvalSub'),
     #经理管理员工信息
     path(r'user/userDetails',views.userDetails,name='userDetails'),
-    #经理管理人员信息最下方按键，并未用到
-    path(r'user/userDetails/change',views.changeDetails,name='changeDetails'),
     #经理修改单个员工信息的edit键
-    re_path(r'user/memberAdd(\d+)/',views.singleEdit,name='singleEdit'),
+    re_path(r'user/memberEdit(\d+)/',views.singleEdit,name='singleEdit'),
     #经理修改员工信息提交
-    re_path(r'user/memberAd/singleEditSub',views.singleEditSub,name='singleEditSub'),
+    re_path(r'user/memberEdit/singleEditSub',views.singleEditSub,name='singleEditSub'),
+    #经理删除员工信息
+    re_path(r'user/memberDel(\d+)/',views.singleDel,name='singleDel'),
+    #添加员工
+    path(r'user/memberAdd/',views.singleAdd,name='singleAdd'),
+    #经理添加员工信息提交
+    re_path(r'user/memberAdd/singleAddSub',views.singleAddSub,name='singleAddSub'),
 ]

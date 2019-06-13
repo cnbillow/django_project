@@ -31,14 +31,8 @@
 </head>
 <body>
 <article class="page-container">
-	<form action="{% url 'singleEditSub' %}" method="post" class="form form-horizontal">
+	<form action="{% url 'singleAddSub' %}" method="post" class="form form-horizontal">
         {% csrf_token %}
-        <div class="row cl">
-			<label class="form-label col-xs-4 col-sm-3">原工号：</label>
-			<div class="formControls col-xs- col-sm-6">
-				<input type="text" class="input-text" readonly="readonly" value="{{ employee.id }}" placeholder="{{ employee.id }}" id="oldId" name="oldId">
-			</div>
-		</div>
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>姓名：</label>
 			<div class="formControls col-xs-6 col-sm-6">
@@ -51,23 +45,6 @@
 				<input type="text" class="input-text" value="{{ employee.id }}" placeholder="{{ employee.id }}" id="userid" name="userid">
 			</div>
 		</div>
-{#        <div class="row cl">#}
-{#			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>性别：</label>#}
-{#			<div class="formControls col-xs-8 col-sm-9 skin-minimal">#}
-{#				<div class="radio-box">#}
-{#					<input name="sex" type="radio" id="sex-1" checked>#}
-{#					<label for="sex-1">男</label>#}
-{#				</div>#}
-{#				<div class="radio-box">#}
-{#					<input type="radio" id="sex-2" name="sex">#}
-{#					<label for="sex-2">女</label>#}
-{#				</div>#}
-{#				<div class="radio-box">#}
-{#					<input type="radio" id="sex-3" name="sex">#}
-{#					<label for="sex-3">保密</label>#}
-{#				</div>#}
-{#			</div>#}
-{#		</div>#}
         <div class="row cl">
 			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
 			<div class="formControls col-xs-6 col-sm-6">
@@ -80,20 +57,6 @@
 				<input type="text" class="input-text" value="{{ employee.department_id_id }}" placeholder="{{ employee.department_id_id }}" id="departmentid" name="departmentid">
 			</div>
 		</div>
-
-{#		<div class="row cl">#}
-{#			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>邮箱：</label>#}
-{#			<div class="formControls col-xs-8 col-sm-9">#}
-{#				<input type="text" class="input-text" placeholder="@" name="email" id="email">#}
-{#			</div>#}
-{#		</div>#}
-{#		<div class="row cl">#}
-{#			<label class="form-label col-xs-4 col-sm-3">备注：</label>#}
-{#			<div class="formControls col-xs-8 col-sm-9">#}
-{#				<textarea name="beizhu" cols="" rows="" class="textarea"  placeholder="说点什么...最少输入10个字符" onKeyUp="$.Huitextarealength(this,100)"></textarea>#}
-{#				<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>#}
-{#			</div>#}
-{#		</div>#}
 		<div class="row cl">
 			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
 				<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
@@ -109,7 +72,7 @@
 <script type="text/javascript" src="/static/HUI/static/h-ui/js/H-ui.min.js"></script>
 <script type="text/javascript" src="/static/HUI/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
 
-<!--请在下方写此页面业务相关的脚本--> 
+<!--请在下方写此页面业务相关的脚本-->
 <script type="text/javascript" src="/static/HUI/lib/My97DatePicker/4.8/WdatePicker.js"></script>
 <script type="text/javascript" src="/static/HUI/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="/static/HUI/lib/jquery.validation/1.14.0/validate-methods.js"></script>
@@ -121,7 +84,7 @@ $(function(){
 		radioClass: 'iradio-blue',
 		increaseArea: '20%'
 	});
-	
+
 	$("#form-member-add").validate({
 		rules:{
 			username:{
@@ -138,7 +101,7 @@ $(function(){
             departmentid:{
 				required:true,
 			},
-			
+
 		},
 		onkeyup:false,
 		focusCleanup:true,
@@ -151,7 +114,7 @@ $(function(){
 		}
 	});
 });
-</script> 
+</script>
 <!--/请在上方写此页面业务相关的脚本-->
 </body>
 </html>

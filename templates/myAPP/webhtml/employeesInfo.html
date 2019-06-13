@@ -223,7 +223,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-            <form action="{% url 'changeDetails' %}" method="post">
+            <form action="#" method="post">
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
@@ -245,8 +245,11 @@
                     <td>{{ employee.password }}</td>
                     <td>{{ employee.department_id_id }}</td>
                     <td>
-                      <a title="编辑" href="javascript:;" onclick="member_edit('编辑员工信息','memberAdd{{ employee.id }}','4','','400')" class="col-xs-12" style="text-decoration:none">
+                      <a title="编辑" href="javascript:;" onclick="member_edit('编辑员工信息','memberEdit{{ employee.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
                           <i class="fa fa-pencil"></i>
+                      </a>
+                      <a title="删除" href="javascript:;" onclick="member_edit('编辑员工信息','memberDel{{ employee.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
+                          <i class="fa fa-trash"></i>
                       </a>
                     </td>
                     </tr>
@@ -263,8 +266,12 @@
                 </tr>
                 </tfoot>
               </table>
-              <div class="col-md-12" align="center">
-                <button type="submit" class="btn btn-primary btn-block btn-flat">提交保存</button>
+              <div class="col-md-2" align="center">
+                <button type="submit" class="btn btn-primary btn-block btn-flat">
+                      <a title="删除" href="javascript:;" onclick="member_edit('添加员工信息','memberAdd','4','','400')" class="col-xs-2" style="text-decoration:none;color: white;">
+                          添加员工
+                      </a>
+                </button>
               </div>
               <!-- /.col -->
               <br>
