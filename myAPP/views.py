@@ -25,10 +25,8 @@ def login(request):
             if (idGet == userOne.name):
                 if (passwordGet == userOne.password):
                     flag = 1
-                    print("#####")
                     break
         if (flag == 1):
-            print("#######")
             rep = render(request, 'myAPP/webhtml/myself.html', {"id": idGet})
             rep.set_cookie("id",idGet,path='/',secure=True)
 
@@ -48,13 +46,10 @@ def user(request):
             del request.COOKIES["type"]
             rep.delete_cookie("id")
             rep.delete_cookie("type")
-            print("删除cookies")
         except:
-            print("cookies已经删除")
             pass
         return rep
     else:
-        print("post请求的页面")
         idGet = request.POST.get("id")
         passwordGet = request.POST.get("password")
         typeGet = int(request.POST.get("userType"))
@@ -173,7 +168,6 @@ def selfInfoEdit(request):
     if(isLognIn(request)==1):
         employeeId = int(request.COOKIES["id"])
         userNow = employees.objects.get(id=employeeId)
-        print(userNow.name)
         return render(request,'myAPP/webhtml/selfInfoEdit.html', {"user": userNow})
     else:
         return render(request, 'myAPP/login.html')
@@ -263,7 +257,6 @@ def overSub(request):
         reasonGet = request.POST.get("reason")
         employeeId = int(request.COOKIES["id"])
         id = overtimes.objects.all().count()
-        print(startGet)
         overtimes.objects.create(id=id + 1, employee_id_id=employeeId, start_time=startGet, end_time=endGet,reason=reasonGet, status=0)
         return render(request, 'myAPP/webhtml/workRight.html')
     else:
@@ -308,7 +301,6 @@ def approvalSub(request):
                     num = num + 1
         else:
             num=1
-        print(num)
         while(1):
             try:
                 statusGet=request.POST.get("info"+str(num))
@@ -332,30 +324,47 @@ def userDetails(request):
     else:
         return render(request,'myAPP/login.html')
 
-#经理对员工信息的操作
+#经理对员工信息的操作，页面上的提交按键
 @csrf_exempt
 def changeDetails(request):
     if (isLognIn(request) == 1):
+        print("waiting for more..")
         return render(request,'myAPP/webhtml/workRight.html')
     else:
         return render(request,'myAPP/login.html')
 
-def add(request):
+#弹窗
+def singleEdit(request,arg):
     if (isLognIn(request) == 1):
-        return render(request,'myAPP/webhtml/member-add.html')
+        idGet=int(arg)
+        employeeOne=employees.objects.get(id=idGet)
+        return render(request, 'myAPP/webhtml/memberEdit.html',{"employee":employeeOne})
     else:
         return render(request,'myAPP/login.html')
 
+#弹窗的表单提交
+@csrf_exempt
+def singleEditSub(request):
+    print("singleEditSub")
+    if(isLognIn(request)==1):
+        oldIdGet=request.POST.get("oldId")
+        print(oldIdGet)
+        nameGet = request.POST.get("username")
+        print(nameGet)
+        idGet = request.POST.get("userid")
+        passwordGet = request.POST.get("password")
+        departmentGet = request.POST.get("departmentid")
+        return render(request,'myAPP/webhtml/workRight.html')
+    else:
+        return render(request,'myAPP/login.html')
 
 #验证登录状态
 def isLognIn(request):
     try:
         employeeId = int(request.COOKIES["id"])
         typeGet = int(request.COOKIES["type"])
-        print("有cookies")
         return 1
     except:
-        print("没有cookies")
         return 0
 
 #审批用的修改申请状态

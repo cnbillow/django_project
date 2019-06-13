@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,re_path
 from . import views
 
 urlpatterns = [
@@ -35,8 +35,10 @@ urlpatterns = [
     path(r'user/approval/arovalSub',views.approvalSub,name='approvalSub'),
     #经理管理员工信息
     path(r'user/userDetails',views.userDetails,name='userDetails'),
-    #经理按键
+    #经理管理人员信息最下方按键，并未用到
     path(r'user/userDetails/change',views.changeDetails,name='changeDetails'),
-    path(r'user/member-add.html',views.add,name='add'),
-
+    #经理修改单个员工信息的edit键
+    re_path(r'user/memberAdd(\d+)/',views.singleEdit,name='singleEdit'),
+    #经理修改员工信息提交
+    re_path(r'user/memberAd/singleEditSub',views.singleEditSub,name='singleEditSub'),
 ]
