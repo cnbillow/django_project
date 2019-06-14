@@ -199,6 +199,7 @@
                   <th>上午下班时间</th>
                   <th>下午上班时间</th>
                   <th>下午下班时间</th>
+                  <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -210,6 +211,14 @@
                     <td>{{ arr.end_time_am }}</td>
                     <td>{{ arr.start_time_pm }}</td>
                     <td>{{ arr.end_time_pm }}</td>
+                    <td>
+                        <a title="编辑" href="javascript:;" onclick="member_edit('编辑工作班次','arrangeEdit{{ arr.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
+                          <i class="fa fa-pencil"></i>
+                      </a>
+                      <a title="删除" href="javascript:;" onclick="member_edit('删除','arrangeDel{{ arr.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
+                          <i class="fa fa-trash"></i>
+                      </a>
+                    </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -220,9 +229,26 @@
                   <th>上午下班时间</th>
                   <th>下午上班时间</th>
                   <th>下午下班时间</th>
+                  <th>操作</th>
                 </tr>
                 </tfoot>
               </table>
+            <br>
+              <div class="col-md-2" align="center">
+                <button type="submit" class="btn btn-primary btn-block btn-flat">
+                      <a title="删除" href="javascript:;" onclick="member_edit('添加员工信息','#','4','','400')" class="col-xs-2" style="text-decoration:none;color: white;">
+                          批量添加
+                      </a>
+                </button>
+              </div>
+              <div class="col-md-2" align="center">
+                <button type="submit" class="btn btn-primary btn-block btn-flat">
+                      <a title="删除" href="javascript:;" onclick="member_edit('添加员工信息','selectDel','4','','400')" class="col-xs-2" style="text-decoration:none;color: white;">
+                          批量删除
+                      </a>
+                </button>
+              </div>
+
             </div>
             <!-- /.box-body -->
           </div>
@@ -369,6 +395,10 @@
 <script src="/static/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="/static/dist/js/demo.js"></script>
+<script type="text/javascript" src="/static/HUI/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/HUI/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/static/HUI/static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="/static/HUI/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
 <!-- page script -->
 <script>
   $(function () {
@@ -380,8 +410,12 @@
       'ordering'    : true,
       'info'        : true,
       'autoWidth'   : false
-    })
-  })
+    });
+  });
+      /*用户-编辑*/
+    function member_edit(title,url,id,w,h){
+        layer_show(title,url,w,h);
+    }
 </script>
 </body>
 </html>

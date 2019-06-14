@@ -47,4 +47,14 @@ urlpatterns = [
     re_path(r'user/memberAdd/singleAddSub',views.singleAddSub,name='singleAddSub'),
     #设置主管
     re_path(r'user/memberSet(\d+)/', views.singleSet, name='singleSet'),
+    #主管修改单个工作班次的edit键
+    re_path(r'user/workArrangements/arrangeEdit(\d+)/', views.arrangeEdit, name='arrangeEdit'),
+    #主管修改工作班次提交
+    re_path(r'user/workArrangements/arrangeEdit/arrangeEditSub',views.arrangeEditSub,name='arrangeEditSub'),
+    #主管删除工作班次
+    re_path(r'user/workArrangements/arrangeDel(\d+)/',views.arrangeDel,name='arrangeDel'),
+    #批量删除
+    path(r'user/workArrangements/selectDel/',views.selectDel,name='selectDel'),
+    #批量删除提交
+    path(r'user/workArrangements/selectDelSub/',views.selectDelSub,name='selectDelSub'),
 ]

@@ -338,10 +338,45 @@ def singleEdit(request,arg):
     else:
         return render(request,'myAPP/login.html')
 
+def arrangeEdit(request,arg):
+    if (isLognIn(request) == 1):
+        idGet=int(arg)
+        employeeOne=arrangements.objects.get(id=idGet)
+        return render(request, 'myAPP/webhtml/arrangeEdit.html',{"employee":employeeOne})
+    else:
+        return render(request,'myAPP/login.html')
+
+def selectDel(request):
+    if (isLognIn(request) == 1):
+        return render(request, 'myAPP/webhtml/selectDel.html')
+    else:
+        return render(request,'myAPP/login.html')
+
+def selectDelSub(request):
+    if (isLognIn(request) == 1):
+        dayGet = request.POST.get("day")
+        startIdGet = int(request.POST.get("startId"))
+        endIdGet = int(request.POST.get("endId"))
+        for num in range(startIdGet,endIdGet):
+            try:
+                arrangements.objects.get(day=dayGet,employee_id=num).delete()
+            except:
+                continue
+        return render(request, 'myAPP/webhtml/workRight.html')
+    else:
+        return render(request, 'myAPP/login.html')
+
 #删除弹窗
 def singleDel(request,arg):
     if (isLognIn(request) == 1):
         employees.objects.get(id=int(arg)).delete()
+        return render(request, 'myAPP/webhtml/workRight.html')
+    else:
+        return render(request,'myAPP/login.html')
+
+def arrangeDel(request,arg):
+    if (isLognIn(request) == 1):
+        arrangements.objects.get(id=int(arg)).delete()
         return render(request, 'myAPP/webhtml/workRight.html')
     else:
         return render(request,'myAPP/login.html')
@@ -389,6 +424,24 @@ def singleEditSub(request):
     else:
         return render(request,'myAPP/login.html')
 
+def arrangeEditSub(request):
+    if (isLognIn(request) == 1):
+        dayGet = request.POST.get("day")
+        idGet = int(request.POST.get("id"))
+        arrangeOne = arrangements.objects.get(employee_id=idGet,day=dayGet)
+        startTimeAmGet = request.POST.get("startTimeAm")
+        endTimeAmGet = request.POST.get("endTimeAm")
+        startTimePmGet = request.POST.get("startTimePm")
+        endTimePmGet = request.POST.get("endTimePm")
+        arrangeOne.start_time_am=startTimeAmGet
+        arrangeOne.end_time_am=endTimeAmGet
+        arrangeOne.start_time_pm=startTimePmGet
+        arrangeOne.end_time_pm=endTimePmGet
+        arrangeOne.save()
+        return render(request, 'myAPP/webhtml/workRight.html')
+    else:
+        return render(request, 'myAPP/login.html')
+
 @csrf_exempt
 def singleAddSub(request):
     nameGet = request.POST.get("username")
@@ -421,7 +474,10 @@ def changeStatus(num,status,typeGet):
             startId=startOne.id
             endId=endOne.id
             for num in range(startId,endId):
-                arrangementGet=arrangements.objects.get(id=num)
+                try:
+                    arrangementGet=arrangements.objects.get(id=num,employee_id=leaveOne.employee_id_id)
+                except:
+                    continue
                 arrangementGet.start_time_am='-'
                 arrangementGet.end_time_am='-'
                 arrangementGet.start_time_pm='-'
