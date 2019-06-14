@@ -12,6 +12,7 @@ class arrangements(models.Model):
 
 class attendances(models.Model):
     id = models.IntegerField(primary_key=True)
+    notice = models.CharField(max_length=255,default='')
     name = models.CharField(max_length=11,default="user")
     employee_id = models.IntegerField()
     arrive_at = models.CharField(max_length=255)
@@ -30,6 +31,7 @@ class employees(models.Model):
     birthday = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     department_id = models.ForeignKey(departments,on_delete = models.PROTECT)
+    isSupervisor=models.IntegerField(default=0)
     #arrange_id = models.ForeignKey(arrangements,on_delete = models.PROTECT)
 
 #测试时使用的表，不要轻易删除

@@ -232,6 +232,7 @@
                   <th>生日</th>
                   <th>密码</th>
                   <th>部门</th>
+                  <th>是否主管</th>
                   <th>操作</th>
                 </tr>
                 </thead>
@@ -245,11 +246,23 @@
                     <td>{{ employee.password }}</td>
                     <td>{{ employee.department_id_id }}</td>
                     <td>
+                        <div class="if/else">
+                            {% if employee.isSupervisor  ==  0 %}
+                                否
+                            {% elif employee.isSupervisor  ==  1 %}
+                                是
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
                       <a title="编辑" href="javascript:;" onclick="member_edit('编辑员工信息','memberEdit{{ employee.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
                           <i class="fa fa-pencil"></i>
                       </a>
                       <a title="删除" href="javascript:;" onclick="member_edit('编辑员工信息','memberDel{{ employee.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
                           <i class="fa fa-trash"></i>
+                      </a>
+                      <a title="主管" href="javascript:;" onclick="member_edit('编辑员工信息','memberSet{{ employee.id }}','4','','400')" class="col-xs-2" style="text-decoration:none">
+                          <i class="fa fa-star"></i>
                       </a>
                     </td>
                     </tr>
@@ -262,6 +275,7 @@
                   <th>生日</th>
                   <th>密码</th>
                   <th>部门</th>
+                  <th>是否主管</th>
                   <th>操作</th>
                 </tr>
                 </tfoot>

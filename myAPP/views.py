@@ -66,7 +66,8 @@ def user(request):
             try:
                 userNow=departments.objects.get(employee_id=idGet)
                 userNow=employees.objects.get(id=idGet,password=passwordGet)
-                rep = render(request, 'myAPP/webhtml/supervisorMyself.html', {"user": userNow})
+                num=leaves.objects.filter(status=0).count()
+                rep = render(request, 'myAPP/webhtml/supervisorMyself.html', {"user": userNow,"noticesNum":num})
                 rep.set_cookie("id", userNow.id)
                 rep.set_cookie("type", typeGet)
                 return rep
@@ -75,7 +76,8 @@ def user(request):
         else:
             try:
                 userNow=managers.objects.get(id=idGet,password=passwordGet)
-                rep = render(request, 'myAPP/webhtml/managerMyself.html', {"user": userNow})
+                num = overtimes.objects.filter(status=0).count()
+                rep = render(request, 'myAPP/webhtml/managerMyself.html', {"user": userNow,"noticesNum":num})
                 rep.set_cookie("id", userNow.id)
                 rep.set_cookie("type", typeGet)
                 return rep
@@ -89,9 +91,11 @@ def myself(request):
         if(typeGet==0):
             return render(request,'myAPP/webhtml/myself.html')
         elif(typeGet==1):
-            return render(request, 'myAPP/webhtml/supervisorMyself.html')
+            num = leaves.objects.filter(status=0).count()
+            return render(request, 'myAPP/webhtml/supervisorMyself.html',{"noticesNum":num})
         else:
-            return render(request, 'myAPP/webhtml/managerMyself.html')
+            num = overtimes.objects.filter(status=0).count()
+            return render(request, 'myAPP/webhtml/managerMyself.html',{"noticesNum":num})
     else:
         return render(request,'myAPP/login.html')
 
@@ -107,19 +111,20 @@ def signIn(request):
         getDay=getTime[2]
         getHour=getTime[3]
         getMinute=getTime[4]
+        idSet=str(getYear)+str(getMonth).zfill(2)+str(getDay).zfill(2)+str(employeeId)
         timeAt=str(getYear)+'-'+str(getMonth)+'-'+str(getDay)+'-'+str(getHour)+':'+str(getMinute)
         userNow=employees.objects.get(id=employeeId)
         userName=userNow.name
         if(getHour>=8 and getHour<=11):
             try:
-                sign_already=attendances.objects.get(employee_id=employeeId)
+                sign_already=attendances.objects.get(employee_id=employeeId,notice=idSet)
                 return render(request,'myAPP/webhtml/signFalse.html')
-            except BaseException:
-                attendances.objects.create(id=id+1,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0)
+            except:
+                attendances.objects.create(id=id+1,notice=idSet,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0)
                 return render(request,'myAPP/webhtml/signResult.html')
-        elif(getHour>=14 and getHour<=17):
+        elif(getHour>=14 and getHour<=24):
             try:
-                employeeOne=attendances.objects.get(employee_id=employeeId)
+                employeeOne=attendances.objects.get(employee_id=employeeId,notice=idSet)
                 leaveAt=employeeOne.leave_at
                 if(leaveAt!=""):
                     return render(request, 'myAPP/webhtml/signFalse.html')
@@ -127,8 +132,8 @@ def signIn(request):
                     employeeOne.leave_at = timeAt
                     employeeOne.save()
                     return render(request, 'myAPP/webhtml/signResult.html')
-            except BaseException:
-                attendances.objects.create(id=id + 1,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
+            except:
+                attendances.objects.create(id=id+1,notice=idSet,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
                 return render(request, 'myAPP/webhtml/signResult.html')
         else:
             return render(request, 'myAPP/webhtml/signFalse.html')
@@ -348,6 +353,23 @@ def singleAdd(request):
     else:
         return render(request,'myAPP/login.html')
 
+#对任命主管的操作
+def singleSet(request,arg):
+    if (isLognIn(request) == 1):
+        employeeOne=employees.objects.get(id=int(arg))
+        employeeOld=employees.objects.get(department_id_id=employeeOne.department_id_id,isSupervisor=1)
+        employeeOne.isSupervisor=1
+        employeeOne.save()
+        employeeOld.isSupervisor=0
+        employeeOld.save()
+        departmentOne=departments.objects.get(id=employeeOne.department_id_id)
+        departmentOne.name=employeeOne.name
+        departmentOne.employee_id=employeeOne.id
+        departmentOne.save()
+        return render(request, 'myAPP/webhtml/workRight.html')
+    else:
+        return render(request,'myAPP/login.html')
+
 #弹窗的表单提交
 @csrf_exempt
 def singleEditSub(request):
@@ -391,6 +413,20 @@ def changeStatus(num,status,typeGet):
         leaveOne=leaves.objects.get(id=num)
         leaveOne.status=status
         leaveOne.save()
+        if(int(leaveOne.status)==1):
+            startGet=leaveOne.start_time
+            endGet=leaveOne.end_time
+            startOne=arrangements.objects.get(employee_id=leaveOne.employee_id_id,day=startGet)
+            endOne=arrangements.objects.get(employee_id=leaveOne.employee_id_id,day=endGet)
+            startId=startOne.id
+            endId=endOne.id
+            for num in range(startId,endId):
+                arrangementGet=arrangements.objects.get(id=num)
+                arrangementGet.start_time_am='-'
+                arrangementGet.end_time_am='-'
+                arrangementGet.start_time_pm='-'
+                arrangementGet.end_time_pm='-'
+                arrangementGet.save()
     elif(typeGet == 2):
         overOne = overtimes.objects.get(id=num)
         overOne.status = status

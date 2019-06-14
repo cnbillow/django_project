@@ -45,4 +45,6 @@ urlpatterns = [
     path(r'user/memberAdd/',views.singleAdd,name='singleAdd'),
     #经理添加员工信息提交
     re_path(r'user/memberAdd/singleAddSub',views.singleAddSub,name='singleAddSub'),
+    #设置主管
+    re_path(r'user/memberSet(\d+)/', views.singleSet, name='singleSet'),
 ]
