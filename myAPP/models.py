@@ -18,7 +18,8 @@ class attendances(models.Model):
     arrive_at = models.CharField(max_length=255)
     leave_at = models.CharField(max_length=255)
     is_overtime = models.SmallIntegerField(max_length=4)
-    reason = models.CharField(max_length=255)
+    department_id = models.IntegerField(default=1)
+    overtime_id=models.IntegerField(default=0)
 
 class departments(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -70,3 +71,9 @@ class temp_arrangements(models.Model):
     employee_id = models.ForeignKey(employees,on_delete = models.CASCADE)
 
 departments.employee_id = models.ForeignKey(employees,on_delete = models.SET_NULL)
+
+class over_list(models.Model):
+    id = models.IntegerField(primary_key=True)
+    day = models.CharField(max_length=255)
+    start_time = models.CharField(max_length=255)
+    end_time = models.CharField(max_length=255)

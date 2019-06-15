@@ -57,4 +57,12 @@ urlpatterns = [
     path(r'user/workArrangements/selectDel/',views.selectDel,name='selectDel'),
     #批量删除提交
     path(r'user/workArrangements/selectDelSub/',views.selectDelSub,name='selectDelSub'),
+    #工作安排
+    path(r'user/workAttendances/',views.workAttendances,name="workAttendaces"),
+    #员工信息
+    path(r'user/detailInfos/',views.detailInfos,name="detailInfos"),
+    #创建加班
+    path(r'user/approval/overAdd/',views.overAdd,name='overAdd'),
+    #创建加班提交
+    path(r'user/approval/overAdd/overAddSub',views.overAddSub,name='overAddSub'),
 ]

@@ -206,13 +206,13 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        审批
+        查看
         <small>
             <div class="if/else">
                 {% if type  ==  1 %}
-                    请假、销假
+                    部门员工考勤
                 {% elif type  ==  2 %}
-                    加班
+                    全体员工考勤
                 {% endif %}
             </div>
         </small>
@@ -229,40 +229,42 @@
               <h3 class="box-title">
                 <div class="if/else">
                     {% if type  ==  1 %}
-                        请假、销假申请记录
+                        部门员工考勤记录
                     {% elif type  ==  2 %}
-                        加班申请记录
+                        全体员工考勤记录
                     {% endif %}
                 </div>
               </h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-            <form action="{% url 'approvalSub' %}" method="post">
+            <form action="{% url 'detailInfos' %}" method="post">
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                 <tr>
                   <th>工号</th>
-                  <th>开始时间</th>
-                  <th>结束时间</th>
-                  <th>理由</th>
-                  <th>审批</th>
+                  <th>姓名</th>
+                  <th>上班打卡时间</th>
+                  <th>下班打卡时间</th>
+                  <th>是否加班</th>
                 </tr>
                 </thead>
                 <tbody>
 
-                {% for leaveInfo in leaveInfos %}
+                {% for one in attendanceInfos %}
                     <tr>
-                    <td>{{ leaveInfo.employee_id_id }}</td>
-                    <td>{{ leaveInfo.start_time }}</td>
-                    <td>{{ leaveInfo.end_time }}</td>
-                    <td>{{ leaveInfo.reason }}</td>
+                    <td>{{ one.employee_id }}</td>
+                    <td>{{ one.name }}</td>
+                    <td>{{ one.arrive_at }}</td>
+                    <td>{{ one.leave_at }}</td>
                     <td>
-                      <select class="form-control" name="info{{ leaveInfo.id }}">
-                        <option value="0">待办</option>
-                        <option value="1">通过</option>
-                        <option value="2">拒绝</option>
-                      </select>
+                        <div class="if/else">
+                            {% if one.is_overtime  ==  1 %}
+                                是
+                            {% else %}
+                                否
+                            {% endif %}
+                        </div>
                     </td>
                     </tr>
                 {% endfor %}
@@ -270,26 +272,20 @@
                 <tfoot>
                 <tr>
                   <th>工号</th>
-                  <th>开始时间</th>
-                  <th>结束时间</th>
-                  <th>理由</th>
-                  <th>审批</th>
+                  <th>姓名</th>
+                  <th>上班打卡时间</th>
+                  <th>下班打卡时间</th>
+                  <th>是否加班</th>
                 </tr>
                 </tfoot>
               </table>
-              <div class="col-md-2" align="center">
-                <button type="submit" class="btn btn-primary btn-block btn-flat">提交保存</button>
+              <div class="col-md-12" align="center">
+                <button type="submit" class="btn btn-primary btn-block btn-flat">查看员工个人信息</button>
               </div>
               <!-- /.col -->
               <br>
             <div><br><br></div>
             </form>
-            <div class="col-md-2" align="center">
-              <button type="submit" class="btn btn-primary btn-block btn-flat">
-                <a title="创建" href="javascript:;" onclick="member_edit('创建信息','overAdd','4','','400')" class="col-xs-2" style="color: white;alignment: right">
-                  _____创建加班
-                </a>
-              </button>
             </div>
             <!-- /.box-body -->
           </div>
@@ -436,10 +432,6 @@
 <script src="/static/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="/static/dist/js/demo.js"></script>
-<script type="text/javascript" src="/static/HUI/lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="/static/HUI/lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="/static/HUI/static/h-ui/js/H-ui.min.js"></script>
-<script type="text/javascript" src="/static/HUI/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
 <!-- page script -->
 <script>
   $(function () {
@@ -453,10 +445,6 @@
       'autoWidth'   : false
     })
   });
-    /*用户-编辑*/
-    function member_edit(title,url,id,w,h){
-        layer_show(title,url,w,h);
-    }
 </script>
 
 </body>

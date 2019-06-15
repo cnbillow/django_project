@@ -9,7 +9,7 @@ def index(request):
 def detail(request,num):
     return HttpResponse(["softdesign is here:",num])
 
-from .models import employees,departments,overtimes,arrangements,attendances,leaves,managers,temp_arrangements
+from .models import employees,departments,overtimes,arrangements,attendances,leaves,managers,over_list
 
 #login并没有用到
 @csrf_exempt
@@ -113,6 +113,7 @@ def signIn(request):
         getMinute=getTime[4]
         idSet=str(getYear)+str(getMonth).zfill(2)+str(getDay).zfill(2)+str(employeeId)
         timeAt=str(getYear)+'-'+str(getMonth)+'-'+str(getDay)+'-'+str(getHour)+':'+str(getMinute)
+        dayAt=str(getYear)+'-'+str(getMonth)+'-'+str(getDay)
         userNow=employees.objects.get(id=employeeId)
         userName=userNow.name
         if(getHour>=8 and getHour<=11):
@@ -120,26 +121,58 @@ def signIn(request):
                 sign_already=attendances.objects.get(employee_id=employeeId,notice=idSet)
                 return render(request,'myAPP/webhtml/signFalse.html')
             except:
-                attendances.objects.create(id=id+1,notice=idSet,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0)
+                attendances.objects.create(id=id+1,notice=idSet,name=userName, employee_id=employeeId,arrive_at=timeAt,is_overtime=0,department_id=userNow.department_id_id,overtime_id=0)
                 return render(request,'myAPP/webhtml/signResult.html')
         elif(getHour>=14 and getHour<=24):
             try:
                 employeeOne=attendances.objects.get(employee_id=employeeId,notice=idSet)
                 leaveAt=employeeOne.leave_at
-                if(leaveAt!=""):
+                if(leaveAt!="" and employeeOne.overtime_id!=0):
                     return render(request, 'myAPP/webhtml/signFalse.html')
+                elif(leaveAt!="" and employeeOne.overtime_id==0):
+                    try:
+                        over=over_list.objects.filter(day=dayAt)
+                        for i in over:
+                            employeeOne.overtime_id=i.id
+                            employeeOne.save()
+                        return render(request, 'myAPP/webhtml/signResult.html',{"flag":1})
+                    except:
+                        return render(request, 'myAPP/webhtml/signFalse.html')
                 else:
                     employeeOne.leave_at = timeAt
                     employeeOne.save()
                     if (getHour <= 17):
                         return render(request, 'myAPP/webhtml/signResult.html')
                     else:
+                        employeeOne.is_overtime = 1
+                        employeeOne.save()
+                        try:
+                            overList=over_list.objects.filter(day=dayAt)
+                            for one in overList:
+                                if(getHour>=int(one.start_time) and getHour<=int(one.end_time)):
+                                    employeeOne.overtime_id=one.id
+                                    employeeOne.save()
+                        except:
+                            pass
                         return render(request, 'myAPP/webhtml/signResult.html',{"flag":1})
             except:
-                attendances.objects.create(id=id+1,notice=idSet,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
                 if (getHour <= 17):
+                    attendances.objects.create(id=id + 1, notice=idSet, name=userName, employee_id=employeeId,
+                                               arrive_at=timeAt, leave_at=timeAt, is_overtime=0,
+                                               department_id=userNow.department_id_id,overtime_id=0)
                     return render(request, 'myAPP/webhtml/signResult.html')
                 else:
+                    try:
+                        overList = over_list.objects.filter(day=dayAt)
+                        for one in overList:
+                            if (getHour >= int(one.start_time) and getHour <= int(one.end_time)):
+                                attendances.objects.create(id=id + 1, notice=idSet, name=userName, employee_id=employeeId,
+                                                           arrive_at=timeAt, leave_at=timeAt, is_overtime=1,
+                                                           department_id=userNow.department_id_id, overtime_id=one.id)
+                    except:
+                        attendances.objects.create(id=id + 1, notice=idSet, name=userName, employee_id=employeeId,
+                                                   arrive_at=timeAt, leave_at=timeAt, is_overtime=1,
+                                                   department_id=userNow.department_id_id,overtime_id=0)
                     return render(request, 'myAPP/webhtml/signResult.html', {"flag": 1})
         else:
             return render(request, 'myAPP/webhtml/signFalse.html')
@@ -458,6 +491,7 @@ def singleAddSub(request):
     return render(request,'myAPP/webhtml/workRight.html')
 
 #验证登录状态
+@csrf_exempt
 def isLognIn(request):
     try:
         employeeId = int(request.COOKIES["id"])
@@ -493,3 +527,52 @@ def changeStatus(num,status,typeGet):
         overOne = overtimes.objects.get(id=num)
         overOne.status = status
         overOne.save()
+
+@csrf_exempt
+def workAttendances(request):
+    if (isLognIn(request) == 1):
+        typeGet = int(request.COOKIES["type"])
+        idGet=int(request.COOKIES["id"])
+        if(typeGet==1):
+            departmentId=departments.objects.get(employee_id=idGet).id
+            attendanceInfos=attendances.objects.filter(department_id=departmentId)
+            return render(request,'myAPP/webhtml/workAttendances.html',{"attendanceInfos":attendanceInfos})
+        elif(typeGet==2):
+            attendanceInfos = attendances.objects.all()
+            return render(request, 'myAPP/webhtml/workAttendances.html', {"attendanceInfos": attendanceInfos})
+    else:
+        return render(request,'myAPP/login.html')
+
+@csrf_exempt
+def detailInfos(request):
+    if (isLognIn(request) == 1):
+        typeGet = int(request.COOKIES["type"])
+        idGet=int(request.COOKIES["id"])
+        if(typeGet==1):
+            departmentId=departments.objects.get(employee_id=idGet).id
+            print(departmentId)
+            employeeInfos=employees.objects.filter(department_id_id=departmentId)
+            print(employeeInfos)
+            return render(request,'myAPP/webhtml/detailInfos.html',{"detailInfos":employeeInfos})
+        elif(typeGet==2):
+            employeeInfos = employees.objects.all()
+            return render(request, 'myAPP/webhtml/detailInfos.html', {"detailInfos": employeeInfos})
+    else:
+        return render(request,'myAPP/login.html')
+
+@csrf_exempt
+def overAdd(request):
+    return render(request,'myAPP/webhtml/overAdd.html')
+
+@csrf_exempt
+def overAddSub(request):
+    id = over_list.objects.all().count()
+    startGet = request.POST.get("startTime")
+    endGet = request.POST.get("endTime")
+    getTime = time.localtime(time.time())
+    getYear = getTime[0]
+    getMonth = getTime[1]
+    getDay = getTime[2]
+    timeAt = str(getYear) + '-' + str(getMonth) + '-' + str(getDay)
+    over_list.objects.create(id=id+1, start_time=startGet, end_time=endGet,day=timeAt)
+    return render(request,'myAPP/webhtml/workRight.html')
