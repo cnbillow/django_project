@@ -131,10 +131,16 @@ def signIn(request):
                 else:
                     employeeOne.leave_at = timeAt
                     employeeOne.save()
-                    return render(request, 'myAPP/webhtml/signResult.html')
+                    if (getHour <= 17):
+                        return render(request, 'myAPP/webhtml/signResult.html')
+                    else:
+                        return render(request, 'myAPP/webhtml/signResult.html',{"flag":1})
             except:
                 attendances.objects.create(id=id+1,notice=idSet,name=userName, employee_id=employeeId, arrive_at=timeAt,leave_at=timeAt, is_overtime=0)
-                return render(request, 'myAPP/webhtml/signResult.html')
+                if (getHour <= 17):
+                    return render(request, 'myAPP/webhtml/signResult.html')
+                else:
+                    return render(request, 'myAPP/webhtml/signResult.html', {"flag": 1})
         else:
             return render(request, 'myAPP/webhtml/signFalse.html')
     else:
