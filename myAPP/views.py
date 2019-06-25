@@ -53,10 +53,31 @@ def user(request):
         idGet = request.POST.get("id")
         passwordGet = request.POST.get("password")
         typeGet = int(request.POST.get("userType"))
+        getTime = time.localtime(time.time())
+        getYear = getTime[0]
+        getMonth = getTime[1]
+        getDay = getTime[2]
+        dayAt = str(getYear) + '-' + str(getMonth) + '-' + str(getDay)
+        idSet = str(getYear) + str(getMonth).zfill(2) + str(getDay).zfill(2) + str(idGet)
+        try:
+            overWhether = over_list.objects.filter(day=dayAt)
+            try:
+                one=overWhether[0]
+                overNum=1
+                del[overWhether]
+            except:
+                overNum=0
+        except:
+            overNum=0
+        try:
+            sign_already = attendances.objects.get(employee_id=idGet, notice=idSet)
+            signNum=1
+        except:
+            signNum=0
         if(typeGet == 0):
             try:
                 userNow=employees.objects.get(id=idGet,password=passwordGet)
-                rep = render(request, 'myAPP/webhtml/myself.html', {"user": userNow})
+                rep = render(request, 'myAPP/webhtml/myself.html', {"user": userNow,"overNum":overNum,"signNum":signNum})
                 rep.set_cookie("id", userNow.id)
                 rep.set_cookie("type", typeGet)
                 return rep
@@ -67,7 +88,7 @@ def user(request):
                 userNow=departments.objects.get(employee_id=idGet)
                 userNow=employees.objects.get(id=idGet,password=passwordGet)
                 num=leaves.objects.filter(status=0).count()
-                rep = render(request, 'myAPP/webhtml/supervisorMyself.html', {"user": userNow,"noticesNum":num})
+                rep = render(request, 'myAPP/webhtml/supervisorMyself.html', {"user": userNow,"noticesNum":num,"overNum":overNum,"signNum":signNum})
                 rep.set_cookie("id", userNow.id)
                 rep.set_cookie("type", typeGet)
                 return rep
@@ -77,7 +98,7 @@ def user(request):
             try:
                 userNow=managers.objects.get(id=idGet,password=passwordGet)
                 num = overtimes.objects.filter(status=0).count()
-                rep = render(request, 'myAPP/webhtml/managerMyself.html', {"user": userNow,"noticesNum":num})
+                rep = render(request, 'myAPP/webhtml/managerMyself.html', {"user": userNow,"noticesNum":num,"overNum":overNum,"signNum":signNum})
                 rep.set_cookie("id", userNow.id)
                 rep.set_cookie("type", typeGet)
                 return rep
