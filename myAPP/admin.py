@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import employees,departments,overtimes,arrangements,attendances,leaves,managers,temp_arrangements
+from .models import employees,departments,overtimes,arrangements,attendances,leaves,managers,over_list
 
 # Register your models here.
 # class EmployeesAdmin(admin.ModelAdmin):
@@ -16,5 +16,7 @@ admin.site.register(employees)
 admin.site.register(departments)
 admin.site.register(arrangements)
 admin.site.register(attendances)
+admin.site.register(leaves)
 admin.site.register(managers)
-admin.site.register(temp_arrangements)
+admin.site.register(over_list)
+admin.site.register(overtimes)
