@@ -308,7 +308,7 @@ def leaveSub(request):
         employeeId = int(request.COOKIES["id"])
         typeGet=request.POST.get("applicationType")
         id = leaves.objects.all().count()
-        leaves.objects.create(id=id+1,employee_id_id=employeeId,type=typeGet,start_date=startGet,end_date=endGet,reason=reasonGet,status=0)
+        leaves.objects.create(id=id+1,employee_id_id=employeeId,type=typeGet,start_time=startGet,end_time=endGet,reason=reasonGet,status=0)
         return render(request,'myAPP/webhtml/workRight.html')
     else:
         return render(request, 'myAPP/login.html')
